@@ -52,6 +52,5 @@ return [
     | - 'whitelist_or_save': Use URL if it matches a whitelisted pattern in WhitelistedImageUrl, otherwise save to server.
     |
     */
-    'remote_image_handling' =>  'whitelist_or_save',    
-
+    'remote_image_handling' => 'whitelist_or_save',
 ];

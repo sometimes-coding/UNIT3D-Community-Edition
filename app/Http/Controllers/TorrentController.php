@@ -205,40 +205,40 @@ class TorrentController extends Controller
     }
 
     /**
-     * Helper for Cover/Banner Handling
+     * Helper for Cover/Banner Handling.
      */
     private function handleTorrentImage(Request $request, Torrent $torrent, string $inputName, string $urlField, string $type, bool $store = false): void
     {
-
         if ($request->hasFile($inputName) || $request->filled($urlField)) {
-           $source = $request->hasFile($inputName)
-               ? $request->file($inputName)
-               : (string) $request->string($urlField);
+            $source = $request->hasFile($inputName)
+                ? $request->file($inputName)
+                : (string) $request->string($urlField);
 
-           /** @var \Illuminate\Http\UploadedFile|string $source */
-           $result = ImageHelper::processTorrentImage($source, (string) $torrent->id, $type);
-    
-           if ($result) {
-               $newUrl = $result['url'];    
-               // Clean up unused file if External URL
-               if (!$store && !Str::contains($newUrl, "authenticated-images/torrent-{$type}s")) {
-                   ImageHelper::deleteUnusedTorrentImage((string) $torrent->id, $type);
-               }
-    
-               // Save the new URL
-               $torrent->{$urlField} = $newUrl;
-               $torrent->save();
-           } else {
-               Log::error("Failed to process {$type} image for torrent {$torrent->id}", [
-                   'source' => $source,
-               ]);
-               throw ValidationException::withMessages([
-                   $urlField => "Failed to process the {$type} image.",
-               ]);
-           }
-       }
-   }
+            /** @var \Illuminate\Http\UploadedFile|string $source */
+            $result = ImageHelper::processTorrentImage($source, (string) $torrent->id, $type);
 
+            if ($result) {
+                $newUrl = $result['url'];
+
+                // Clean up unused file if External URL
+                if (!$store && !Str::contains($newUrl, "authenticated-images/torrent-{$type}s")) {
+                    ImageHelper::deleteUnusedTorrentImage((string) $torrent->id, $type);
+                }
+
+                // Save the new URL
+                $torrent->{$urlField} = $newUrl;
+                $torrent->save();
+            } else {
+                Log::error("Failed to process {$type} image for torrent {$torrent->id}", [
+                    'source' => $source,
+                ]);
+
+                throw ValidationException::withMessages([
+                    $urlField => "Failed to process the {$type} image.",
+                ]);
+            }
+        }
+    }
 
     /**
      * Update the specified Torrent resource in storage.
@@ -268,7 +268,7 @@ class TorrentController extends Controller
         );
 
         $this->handleTorrentImage($request, $torrent, 'torrent-cover', 'cover_url', 'cover');
-        $this->handleTorrentImage($request, $torrent, 'torrent-banner', 'banner_url', 'banner');     
+        $this->handleTorrentImage($request, $torrent, 'torrent-banner', 'banner_url', 'banner');
 
         // Torrent Keywords System
         Keyword::where('torrent_id', '=', $torrent->id)->delete();
@@ -293,6 +293,7 @@ class TorrentController extends Controller
             $torrent->igdb !== null          => new IgdbScraper()->game($torrent->igdb),
             default                          => null,
         };
+
         return to_route('torrents.show', ['id' => $id])
             ->with('success', 'Successfully Edited!');
     }
@@ -351,7 +352,7 @@ class TorrentController extends Controller
 
         ImageHelper::deleteUnusedTorrentImage((string) $torrent->id, 'cover');
         ImageHelper::deleteUnusedTorrentImage((string) $torrent->id, 'banner');
-        
+
         Unit3dAnnounce::removeTorrent($torrent);
 
         $torrent->delete();

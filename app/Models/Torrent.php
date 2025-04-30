@@ -152,10 +152,13 @@ class Torrent extends Model
         }
 
         $coverFile = "torrent-cover_{$this->id}";
+
         if (Storage::disk('torrent-covers')->exists("{$coverFile}.webp")) {
-            return route('authenticated_images.torrent_cover', ['torrent' => $this->id]) . '.webp';
-        } elseif (Storage::disk('torrent-covers')->exists("{$coverFile}.jpg")) {
-            return route('authenticated_images.torrent_cover', ['torrent' => $this->id]) . '.jpg';
+            return route('authenticated_images.torrent_cover', ['torrent' => $this->id]).'.webp';
+        }
+
+        if (Storage::disk('torrent-covers')->exists("{$coverFile}.jpg")) {
+            return route('authenticated_images.torrent_cover', ['torrent' => $this->id]).'.jpg';
         }
 
         return null;
@@ -171,10 +174,13 @@ class Torrent extends Model
         }
 
         $bannerFile = "torrent-banner_{$this->id}";
+
         if (Storage::disk('torrent-banners')->exists("{$bannerFile}.webp")) {
-            return route('authenticated_images.torrent_banner', ['torrent' => $this->id]) . '.webp';
-        } elseif (Storage::disk('torrent-banners')->exists("{$bannerFile}.jpg")) {
-            return route('authenticated_images.torrent_banner', ['torrent' => $this->id]) . '.jpg';
+            return route('authenticated_images.torrent_banner', ['torrent' => $this->id]).'.webp';
+        }
+
+        if (Storage::disk('torrent-banners')->exists("{$bannerFile}.jpg")) {
+            return route('authenticated_images.torrent_banner', ['torrent' => $this->id]).'.jpg';
         }
 
         return null;
@@ -936,7 +942,7 @@ class Torrent extends Model
 
         return [
             'id'                 => $torrent->id,
-            'name'               => $torrent->name,      
+            'name'               => $torrent->name,
             'description'        => $torrent->description,
             'mediainfo'          => $torrent->mediainfo,
             'bdinfo'             => $torrent->bdinfo,

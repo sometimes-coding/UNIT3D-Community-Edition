@@ -74,7 +74,7 @@ trait Auditable
                 // Process only what changed
                 foreach ($new as $key => $value) {
                     $data[$key] = [
-                        'old' => array_key_exists($key, $old) ? $old[$key] : null,
+                        'old' => \array_key_exists($key, $old) ? $old[$key] : null,
                         'new' => $value,
                     ];
                 }

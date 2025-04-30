@@ -363,7 +363,7 @@ class TorrentController extends BaseController
         if ($request->hasFile('torrent-banner') && $request->filled('banner_url')) {
             return $this->sendError('Validation Error.', 'You can only provide either a cover image or a cover URL, not both.');
         }
-        
+
         if ($v->fails()) {
             if (Storage::disk('torrent-files')->exists($fileName)) {
                 Storage::disk('torrent-files')->delete($fileName);
@@ -379,7 +379,7 @@ class TorrentController extends BaseController
         if ($request->hasFile('torrent-cover') || $request->filled('cover_url')) {
             $source = $request->hasFile('torrent-cover') ? $request->file('torrent-cover') : (string) $request->string('cover_url');
 
-            if (is_array($source)) {
+            if (\is_array($source)) {
                 $source = $source[0];
             }
 
@@ -396,7 +396,7 @@ class TorrentController extends BaseController
         if ($request->hasFile('torrent-banner') || $request->filled('banner_url')) {
             $source = $request->hasFile('torrent-banner') ? $request->file('torrent-banner') : (string) $request->string('banner_url');
 
-            if (is_array($source)) {
+            if (\is_array($source)) {
                 $source = $source[0];
             }
 
@@ -407,7 +407,7 @@ class TorrentController extends BaseController
                     'banner_url' => $result['url'],
                 ]);
             }
-        }  
+        }
 
         // Populate the status/seeders/leechers/times_completed fields for the external tracker
         $torrent->refresh();
@@ -708,7 +708,7 @@ class TorrentController extends BaseController
                             ],
                             'name'             => $hit['name'],
                             'cover_url'        => $hit['cover_url'] ?? null,
-                            'banner_url'       => $hit['banner_url'] ?? null,                            
+                            'banner_url'       => $hit['banner_url'] ?? null,
                             'release_year'     => $meta['year'] ?? null,
                             'category'         => $hit['category']['name'] ?? null,
                             'type'             => $hit['type']['name'] ?? null,
