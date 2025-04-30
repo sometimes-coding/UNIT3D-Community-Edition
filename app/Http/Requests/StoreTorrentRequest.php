@@ -91,6 +91,12 @@ class StoreTorrentRequest extends FormRequest
                     } catch (Exception) {
                         $fail('You Must Provide A Valid Torrent File For Upload!');
                     }
+                    
+                    $maxPieceSize = config('torrent.max_piece_size');
+                    $pieceLength = $meta['piece_length'] ?? null;
+                    if ($pieceLength && $pieceLength > $maxPieceSize) {
+                        $fail('The piece size exceeds the maximum allowed size of ' . ($maxPieceSize / (1024 * 1024)) . ' MB!');
+                    }
 
                     foreach (TorrentTools::getFilenameArray($decodedTorrent) as $name) {
                         if (!TorrentTools::isValidFilename($name)) {
