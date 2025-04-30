@@ -124,6 +124,7 @@ class TorrentController extends BaseController
         $infohash = Bencode::get_infohash($decodedTorrent);
 
         $v2 = Bencode::is_v2_or_hybrid($decodedTorrent);
+
         if ($v2) {
             return $this->sendError('BitTorrent v2 (BEP 52) is not supported!');
         }
@@ -136,8 +137,9 @@ class TorrentController extends BaseController
 
         $maxPieceSize = config('torrent.max_piece_size');
         $pieceLength = $meta['piece_length'] ?? null;
+
         if ($pieceLength && $pieceLength > $maxPieceSize) {
-            return $this->sendError('The piece size exceeds the maximum allowed size of ' . ($maxPieceSize / (1024 * 1024)) . ' MB!');
+            return $this->sendError('The piece size exceeds the maximum allowed size of '.($maxPieceSize / (1024 * 1024)).' MB!');
         }
 
         foreach (TorrentTools::getFilenameArray($decodedTorrent) as $name) {
