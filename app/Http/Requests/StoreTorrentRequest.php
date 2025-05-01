@@ -87,6 +87,7 @@ class StoreTorrentRequest extends FormRequest
                     }
 
                     $meta = null;
+
                     try {
                         $meta = Bencode::get_meta($decodedTorrent);
                     } catch (Exception) {
@@ -124,17 +125,20 @@ class StoreTorrentRequest extends FormRequest
                         2 ** 27 => ['min' => 10000, 'max' => 20000],
                         2 ** 28 => ['min' => 10000, 'max' => 20000],
                     ];
+
                     if (!isset($pieceSizeRules[$pieceLength])) {
-                        $fail(sprintf(
+                        $fail(\sprintf(
                             'Invalid piece size: %s. Must be one of: %s.',
                             TorrentTools::formatBytes($pieceLength),
                             implode(', ', array_map([TorrentTools::class, 'formatBytes'], array_keys($pieceSizeRules)))
                         ));
+
                         return;
                     }
 
                     // Validate piece count and provide actionable feedback
                     $rule = $pieceSizeRules[$pieceLength];
+
                     if ($pieceCount < $rule['min'] || $pieceCount > $rule['max']) {
                         $recommendedPieceSize = TorrentTools::getRecommendedPieceSize($totalSize, $pieceSizeRules);
 
