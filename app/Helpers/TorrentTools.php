@@ -226,7 +226,7 @@ class TorrentTools
     /**
      * Convert bytes to a readable format (KiB, MiB, GiB).
      *
-     * @param int $bytes
+     * @param  int    $bytes
      * @return string
      */
     public static function formatBytes(int $bytes): string
@@ -235,20 +235,21 @@ class TorrentTools
         $value = $bytes;
         $unitIndex = 0;
 
-        while ($value >= 1024 && $unitIndex < count($units) - 1) {
+        while ($value >= 1024 && $unitIndex < \count($units) - 1) {
             $value /= 1024;
             $unitIndex++;
         }
 
-        $formatted = rtrim(rtrim(sprintf('%.2f', $value), '0'), '.');
+        $formatted = rtrim(rtrim(\sprintf('%.2f', $value), '0'), '.');
+
         return $formatted.' '.$units[$unitIndex];
     }
 
     /**
      * Get a recommended piece size based on torrent size using piece size rules.
      *
-     * @param int $totalSize
-     * @param array $pieceSizeRules
+     * @param  int   $totalSize
+     * @param  array $pieceSizeRules
      * @return int
      */
     public static function getRecommendedPieceSize(int $totalSize, array $pieceSizeRules): int
@@ -263,6 +264,7 @@ class TorrentTools
         );
 
         $pieceSizes = array_keys($validPieceSizes);
+
         if (empty($pieceSizes)) {
             // Fallback to the smallest piece size if no valid sizes are found
             return min(array_keys($pieceSizeRules));
@@ -274,6 +276,7 @@ class TorrentTools
 
         foreach ($pieceSizes as $size) {
             $diff = abs($idealPieceSize - $size);
+
             if ($diff < $minDiff) {
                 $minDiff = $diff;
                 $closestPieceSize = $size;
@@ -281,5 +284,5 @@ class TorrentTools
         }
 
         return $closestPieceSize;
-    }    
+    }
 }
