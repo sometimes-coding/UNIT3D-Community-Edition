@@ -139,7 +139,6 @@ class TorrentController extends BaseController
         $pieceLength = $meta['piece_length'] ?? null;
         $totalSize = $meta['size'] ?? 0;
         $pieceCount = $pieceLength > 0 ? (int) ceil($totalSize / $pieceLength) : 0;
-
         $pieceSizeRules = [
             // Small piece sizes (16 KiB - 64 KiB)
             2 ** 14 => ['min' => 1, 'max' => 1500],

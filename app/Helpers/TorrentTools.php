@@ -249,7 +249,7 @@ class TorrentTools
      * Get a recommended piece size based on torrent size using piece size rules.
      *
      * @param  int   $totalSize
-     * @param  array $pieceSizeRules
+     * @param   array<int, array{min: int, max: int}> $pieceSizeRules
      * @return int
      */
     public static function getRecommendedPieceSize(int $totalSize, array $pieceSizeRules): int
@@ -264,10 +264,10 @@ class TorrentTools
         );
 
         $pieceSizes = array_keys($validPieceSizes);
-
         if (empty($pieceSizes)) {
-            // Fallback to the smallest piece size if no valid sizes are found
-            return min(array_keys($pieceSizeRules));
+            /** @var non-empty-array<int> $allPieceSizes */
+            $allPieceSizes = array_keys($pieceSizeRules);
+            return min($allPieceSizes);
         }
 
         // Find the closest piece size to the ideal
@@ -276,7 +276,7 @@ class TorrentTools
 
         foreach ($pieceSizes as $size) {
             $diff = abs($idealPieceSize - $size);
-
+            
             if ($diff < $minDiff) {
                 $minDiff = $diff;
                 $closestPieceSize = $size;
@@ -284,5 +284,5 @@ class TorrentTools
         }
 
         return $closestPieceSize;
-    }
+    }    
 }
