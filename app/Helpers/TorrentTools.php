@@ -222,4 +222,64 @@ class TorrentTools
         // unique keywords only (case insensitive)
         return array_values(array_intersect_key($keywords, array_unique(array_map('strtolower', $keywords))));
     }
+
+    /**
+     * Convert bytes to a readable format (KiB, MiB, GiB).
+     *
+     * @param int $bytes
+     * @return string
+     */
+    public static function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+        $value = $bytes;
+        $unitIndex = 0;
+
+        while ($value >= 1024 && $unitIndex < count($units) - 1) {
+            $value /= 1024;
+            $unitIndex++;
+        }
+
+        $formatted = rtrim(rtrim(sprintf('%.2f', $value), '0'), '.');
+        return $formatted.' '.$units[$unitIndex];
+    }
+
+    /**
+     * Get a recommended piece size based on torrent size using piece size rules.
+     *
+     * @param int $totalSize
+     * @param array $pieceSizeRules
+     * @return int
+     */
+    public static function getRecommendedPieceSize(int $totalSize, array $pieceSizeRules): int
+    {
+        $targetPieceCount = 1500;
+        $idealPieceSize = $totalSize / $targetPieceCount;
+
+        // Find the closest piece size that satisfies the 500–3000 piece count range
+        $validPieceSizes = array_filter(
+            $pieceSizeRules,
+            fn ($rule) => $rule['min'] <= 500 && $rule['max'] >= 3000
+        );
+
+        $pieceSizes = array_keys($validPieceSizes);
+        if (empty($pieceSizes)) {
+            // Fallback to the smallest piece size if no valid sizes are found
+            return min(array_keys($pieceSizeRules));
+        }
+
+        // Find the closest piece size to the ideal
+        $closestPieceSize = $pieceSizes[0];
+        $minDiff = abs($idealPieceSize - $closestPieceSize);
+
+        foreach ($pieceSizes as $size) {
+            $diff = abs($idealPieceSize - $size);
+            if ($diff < $minDiff) {
+                $minDiff = $diff;
+                $closestPieceSize = $size;
+            }
+        }
+
+        return $closestPieceSize;
+    }    
 }
